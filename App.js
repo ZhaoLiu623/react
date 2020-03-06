@@ -1,67 +1,89 @@
-import React, { Component } from 'react';
-import { FlatList, StyleSheet, TextInput, Text, View } from 'react-native';
-import { RadioButton } from 'react-native-paper';
+import * as React from 'react';
+import { Text, View, FlatList, Button, TextInput, StyleSheet } from 'react-native';
 
-export default class App extends Component {
-	constructor(props) {
-		super(props);
-		this.data = [{
-			task: 'Try adding an element!'
-		}],
-		this.state = {
-			tasks: [],
-			text: ''
-		}
-	}
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tasks: [{ text: "Start by adding a task!" }],
+      text: ""
+    };
+  }
+  
+  updateText = (text) => {
+    this.setState({ text: text });
+  }
 
-	componentDidMount() {
-		this.setState({ tasks: [...this.data] })
-	}
+  addTask = () => {
+    let isEmpty = this.state.text.trim().length == 0;
 
-	addTasks = (desc) => {
-		this.data.push({ task: desc });
-		this.setState({ tasks: [...this.data] })
-	}
+    if (!isEmpty) {
+      this.setState(
+        (prevState) => {
+          let { tasks, text } = prevState;
+          return {
+            tasks: tasks.concat({ index: tasks.length, text: text }),
+            text: ""
+          };
+        }
+      );
+    }
+  }
 
-	removeTask = (index) => {
-		this.data.splice(index, 1);
-		this.setState({ tasks: [...this.data] })
-	}
+  deleteTask = i => {
+    this.setState(
+      (prevState) => {
+        let newState = prevState.tasks.slice()
+        newState.splice(i, 1);
+        return { tasks: newState };
+      }
+    );
+  }
 
-	return (
-		<View style={styles.container}>
-			<Text style={styles.title}>TODO</Text>
-			<FlatList
-				data={this.state.tasks}
-				renderItem={ (item, index) => 
-					<RadioButton.Item label={this.state.tasks[index].task} onPress={
-						this.removeTask(index);
-					}/>
-				}
-			/>
-			<TextInput
-				placeholder="Type here to add a task."
-				onSubmitEditing={(text) => 
-					
-				}
-			/>
-		</View>
-	);
+  render() {
+    return (
+      <View>
+        <Text style={styles.title}>Todo List</Text>
+        <FlatList
+          style={styles.list}
+          data={this.state.tasks}
+          renderItem={
+            ({ item, index }) =>
+            <View style={styles.item}>
+              <Text style={styles.item}>{item.text}</Text>
+              <Button title="x" onPress={ () => this.deleteTask(index) } />
+            </View>
+          }
+        />
+        <TextInput
+          style={styles.item}
+          onChangeText={this.updateText}
+          onSubmitEditing={this.addTask}
+          value={this.state.text}
+          placeholder="Type to add a task!"
+          returnKeyLabel="done"
+          returnKeyType="done"
+        />
+      </View>
+    );
+  }
 }
 
-const styles = StyleSheet.create({
-  	container: {
-		flex: 1,
-		backgroundColor: 'white',
-		alignItems: 'center',
-		justifyContent: 'center',
- 	},
-	item: {
-		backgroudColor: 'grey',
-		padding: 20,
-		margin: 8,
-	},
-	title: {
-		fontSize: 18,
-	},
-});
+const styles = StyleSheet.create(
+  {
+    list: {
+      flex: 1
+    },
+    title: {
+      fontSize: 32,
+      textAlign: 'center',
+      margin: 20
+    },
+    item: {
+      padding: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }
+  }
+)
