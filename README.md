@@ -4,6 +4,10 @@ This is a tutorial for creating a todo list android application using React Nati
 
 ## Where do I start?
 
+Right here.
+
+### Part 0: Getting this repo on your computer
+
 1. [Get familiar with git and Github if you aren't already!](https://nathanielbd.github.io/blog/git-familiar-with-git)
 2. Clone this repo. You can do this by running `git clone https://github.umn.edu/app-developers-club/react-native-todo`. Then you can type `cd react-native-todo` and all of this will be in your working directory!
 3. Follow the rest of this tutorial.
@@ -11,7 +15,7 @@ This is a tutorial for creating a todo list android application using React Nati
 
 ## Tutorial
 
-### Part 1
+### Part 1: Prerequisites
 
 Make sure you familiarize with [the build/test tools](https://nathanielbd.github.io/blog/getting-started-with-react-native) as well as [the basics of React Native](https://nathanielbd.github.io/blog/react-native-basics) before getting started.
 
@@ -19,7 +23,7 @@ Make sure you familiarize with [the build/test tools](https://nathanielbd.github
 - Can you change a headline on [news.google.com](https://news.google.com) to make it seem like a headline from The Onion and change its link to rickroll when clicked? (Hint: the `href` attribute of an `a` tag controls the destination of a link)
 - What's the difference between prop and state?
 
-### Part 2
+### Part 2: Components, Styling, and Testing
 
 1. Create a blank project. You can do this at [snack.expo.io](https://snack.expo.io), but I recommend doing this through the expo CLI. Working from the command line will make deployment and github integration much easier.
 2. Open `App.js`, which is the entrypoint to your app.
@@ -131,8 +135,18 @@ const styles = StyleSheet.create(
 
 ![Margin vs. Padding](https://miro.medium.com/max/1157/1*xOn6MsNhUcju7Did367ssQ.jpeg)
 - Notice how we can define a `const` outside of the component and reference it inside.
+8. Test it out to see your app in action!
+- Run `expo start` in the directory that has `App.js`. This should bring you to a page with the Metro bundler, the tool Facebook created for building and testing React Native apps. Here's what you should see:
 
-### Part 3
+![Metro bundler in the terminal](https://i.gyazo.com/372ca0e75e5604db33af9d7b7f0bf71b.png)
+
+![Metro bundler in the browser](https://www.bignerdranch.com/wp-content/uploads/2019/12/2-metro-bundler.png)
+
+- You will know your app is finished building when there's a log saying `Building JavaScript bundle: finished in XXXms` on both the terminal and the browser page.
+- At this point, you may scan the QR code (using the camera app on iOS or the expo app on Android) and you will see the results in the expo app.
+- If you're using snack, you can see the app's output on the right-hand side.
+
+### Part 3: Data Manipulation and State Handling
 
 COMING SOON!
 
