@@ -104,7 +104,14 @@ export default class App extends React.Component {
 				style={styles.list}
 				data={this.state.tasks}
 				renderItem={ ({item, index}) =>
+					<View style={styles.item}>
+						<Text style={styles.item}>{item.text}</Text>
+					</View>
 				}
+			/>
+			<TextInput
+				style={styles.item}
+				placeholder="Type to add a task!"	
 			/>
 		</View>
 	}
@@ -147,11 +154,147 @@ const styles = StyleSheet.create(
 - If you're using snack, you can see the app's output on the right-hand side.
 
 ### Part 3: Data Manipulation and State Handling
+- Let's start by making sure the text in our `TextInput` updates our app's state.
+```javascript
+export default class App extends React.Component {
+	constructor(props) {
+		...
+	}
+
+	updateText = (text) => {
+		this.setState({ text: text });
+	}
+
+	render() {
+		<View>
+			...
+			<TextInput
+				style={styles.item}
+				onChangeText={this.updateText}
+				value={this.state.text}
+				placeholder="Type to add a task!"
+			/>
+		</View>
+	}
+}
+```
+    - The `(param) => { }` syntax is just another way to define a method. We could also write `updateText(text) { }`.
+    - `setState` is a method you can use for any React Component. It updates the state. Note that this is different than saying `this.state = { text: text }`, because initially our state has two keys: tasks (an array of JSON objects) and text (a string). This call to `setState` only updates the value associated with the `text` key.
+    - `value` and `onChangeText` are props of `TextInput`. To make use of them and fully understand how they work, you have to look at [the documentation](https://reactnative.dev/docs/textinput.html). This is what you'll have to do when you use a component you didn't create from scratch.
+- Now that we can keep track of what's in the `TextInput`, we need to handle our app's behavior when the user submits it.
+```javascript
+export default class App extends React.Component {
+	...
+	updateText = (text) => {
+		...
+	}
+	
+	addTask = () => {
+		let isEmpty = this.state.text.trim().length == 0;
+		
+		if (!isEmpty) {
+		}	
+	}
+
+	render() {
+	}
+}
+```
+    - `let` declares a variable that can be seen inside of its code block. Here, we look at `this.state.text` (what the user typed in the `TextInput` and we remove trailing whitespace with `trim()` then count how many characters are in the string. If the string is empty, then there will be 0 characters and the comparison with 0 will yield `true`.
+    - `!` is pronounced 'bang'. It inverts a Boolean variable (one that is `true` or `false`) like `isEmpty`. If `isEmpty` is `true`, then `!isEmpty` is `false` and vice versa.
+    - We don't want to add a task if the user submits nothing or submits a bunch of spaces. That's why we have this `if` statement.
+- We need to add functionality for adding tasks
+```javascript
+...
+addTask = () => {
+	let isEmpty = this.state.text.trim().length == 0;
+
+	if (!isEmpty) {
+		this.setState(
+			(prevState) => {
+				let { tasks, text } = prevState;
+				return {
+					tasks: tasks.concat({ index: tasks.length, text: text }),
+					text: ""
+				};
+			}
+		);
+	}
+}
+...
+```
+    - There's a lot going on here. At the top level, we're using `setState` again, but not in the way we used before. Previously, we gave it a JSON object and it would update the state. This time we give it a function which it will evaluate by passing it the previous state. Note that the choice of naming the parameter of the function `prevState` doesn't change the behavior of the program. We could have named the parameter `Charles` and `setState` will still give our function the previous state of `App`.
+    - One level down, we define our function. `prevState` is a JavaScript object with two keys. Using the nifty syntax `let { tasks, text } = prevState;`, we can 'unpack' that object so we have two variables in our scope: one for each key.
+    - Finally, we have the return statement of our function. The output of our function should be a JavaScript object so that `setState` can update our app's state. 
+    - We assign a value to the `tasks` key: `tasks: tasks.concat({ index: tasks.length, text: text })`. The `tasks` on the right-hand side refers to the variable we created when we 'unpacked' the previous state. The `text` on the right-hand side is the other variable created when unpacking. So the value that ends up being associated with the `tasks` key is just the previous state with another object added (concatenated) to the end of the array. We want the `index` of the new object to be equal to the number of stasks above it so that the 2nd element is at index 1 and so on.
+    - We still need to update what's rendered in our app.
+    ```javascript
+    render() {
+    	<View>
+    		...
+    		<TextInput
+    			...
+    			onSubmitEditing={this.addTask}
+    			returnKeyLabel="done"
+    			returnKeyType="done"
+    		/>
+    	</View>
+    }
+    ```
+        - `returnKeyLabel` and `returnKeyType` are simply to make the `TextInput` compatible with both Android and iOS. "done" just happens to be an action both platforms support.
+- Let's implement removing tasks.
+```javascript
+...
+addTask = () => {
+	...
+}
+
+deleteTask = i => {
+	this.setState(
+		(prevState) => {
+			let newState = prevState.tasks.slice();
+			newState.splice(i, 1);
+			return { tasks: newState };
+		}
+	);
+}
+
+render() {
+...
+}
+```
+    - We're using the same approach as `addTask`: giving `setState` a function to evaluate given the previous state.
+    - `slice` gives us a copy of the `tasks` array so that we can modify it before returning.
+    - `splice` removes 1 element at index `i`.
+    - We update the state with the list of tasks minus the one we just deleted
+    - The user still needs a way to delete a specific task
+    ```javascript
+    render() {
+    	return (
+    		...
+    		<FlatList
+    			renderItem = {
+    				({ item, index }) =>
+    				<View style={styles.item}>
+    					<Text style={styles.item}>{item.text}</Text>
+    					<Button title="x" onPress={ () => this.deleteTask(index) } />
+    				</View>
+    			}
+    		/>
+    		...
+    	);
+    }
+    ```
+    - And we're done! Test the app out. It should look like [this](https://snack.expo.io/@nathanielbd/todotorial) (in action) or this (static):
+
+![static image of the app](https://imgur.com/a/4jHNSn0)
+
+### Part 4: Deployment to Google Play Store
 
 COMING SOON!
 
 Adapted from [todo app with react native](https://codeburst.io/todo-app-with-react-native-f889e97e398e)
 
-Last updated: 03/20/2020
+Last updated: 03/22/2020
 
 Run `git pull` to update
