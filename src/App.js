@@ -72,7 +72,7 @@ export default class App extends React.Component {
 const styles = StyleSheet.create(
   {
     list: {
-      flex: 1
+      width: '100%'
     },
     title: {
       fontSize: 32,

@@ -1,28 +1,21 @@
 {
   "expo": {
     "name": "todotorial",
-    "description": "No description",
-    "slug": "snack-f66219c2-eb0d-44c2-9d03-166dd07f8c52",
-    "privacy": "unlisted",
+    "description": "Todo list",
+    "slug": "https://expo.io/@nathanielbd/snack-f66219c2-eb0d-44c2-9d03-166dd07f8c52",
     "sdkVersion": "36.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
     "icon": "https://d1wp6m56sqw74a.cloudfront.net/~assets/c9aa1be8a6a6fe81e20c3ac4106a2ebc",
-    "loading": {
-      "icon": "https://d1wp6m56sqw74a.cloudfront.net/~assets/c9aa1be8a6a6fe81e20c3ac4106a2ebc",
-      "hideExponentText": false
-    },
-    "packagerOpts": {
-      "assetExts": [
-        "ttf",
-        "mp4",
-        "otf",
-        "xml"
-      ]
-    },
     "ios": {
+      "bundleIdentifier": "com.adc.todotorial",
+      "bundleNumber": "1.0.0",
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.adc.todotorial",
+      "versionCode": 1
     }
   }
 }
