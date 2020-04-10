@@ -294,7 +294,7 @@ And we're done! Test the app out. It should look like [this](https://snack.expo.
 - Todo lists aren't very useful if they go away after you exit the app.
 - Let's add some memory to the app that persists between sessions.
 - We'll use [AsyncStorage](https://reactnative.dev/docs/asyncstorage.html) for this. 
-- The 'Async' part of Async storage stands for asynchronous. That means there may be some time delay between when its methods are called and when it will return a response. JavaScript has its own way of dealing with asynchronicity, so we're going to have to learn some new syntax.
+- The 'Async' part of AsyncStorage stands for asynchronous. That means there may be some time delay between when its methods are called and when it will return a response. JavaScript has its own way of dealing with asynchronicity, so we're going to have to learn some new syntax.
 - AsyncStorage is local to the device running the app and every component can see its contents.
 - It organizes its data with key-value pairs, where both of them are strings.
 - Let's make it so that the app pulls from AsyncStorage every time the user opens the app.
@@ -333,7 +333,7 @@ render() {
 ```
 - We need to prefix each asynchronous function with the keyword `async`. This allows us to use the keyword `await`, which waits until an asynchronous call can resolve to a value.
 - `componentDidMount` is another special method for components besides `render`. It is called after the constructor and is able to be asynchronous.
-- Since `componentDidMount` is asynchronous and `render` is not, we need to make sure that the incorrect data is not being rendered before the data is updated in `componentDidMount`. We do this by having a `loaded` key in our state that is `false` by default and is only made `true` when `componentDidMount` is finished. In the time that `componentDidMount` takes to finish, `render` will simply display a loading wheel.
+- Since `componentDidMount` is asynchronous and `render` is not, we need to make sure that the incorrect data is not being rendered before the data is updated in `componentDidMount`. We do this by having a `loaded` key in our state that is `false` by default and is only made `true` when `componentDidMount` is finished. In the time that `componentDidMount` takes to finish, `render` will simply display a loading wheel because of `ActivityIndicator`.
 - Note that we reference the key `"TASKS"` before we ever assign a value to that key. When the user opens the app for the first time, the value associated with `"TASKS"` will be `null` or empty. We only update our data if `"TASKS"` has a non-null value.
 - `AsyncStorage.getItem` takes two arguments. The first is which key to look for its value. The second is a function to call when the lookup is complete. That function, called a callback, could handle errors, but we won't be doing that in this rather simple app.
 - This call to `JSON.parse` is a preview of what we will be doing next. `JSON.parse` takes a JSON string and converts it to an object. This bridges the gap between AsyncStorage, which wants a string key to store a string value, and `setState`, which takes an object.
@@ -371,7 +371,7 @@ deleteTask = i => {
 ### Part 5: Deployment to Google Play Store
 
 - Make sure the app works by running `expo start` and trying it out on your smartphone. You can also import your code to [snack.expo.io](https://snack.expo.io) to test on android if you don't have an android device.
-- The following steps are based off of Expo's documentation on [building](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) and [deploying](https://docs.expo.io/versions/latest/distribution/app-stores/). You should consult these if something goes wrong.
+- The following steps are based off of Expo's documentation on [building](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/), [uploading](https://docs.expo.io/versions/latest/distribution/uploading-apps/), and [deploying](https://docs.expo.io/versions/latest/distribution/app-stores/). You should consult these if something goes wrong.
 - Run `expo publish`. This uploads your code to Expo's content delivery network (CDN) for hosting. Go to the URL it outputs and save the address bar to your clipboard.
 - Let's configure our `app.json` for the Google Play Store
 ```
@@ -399,8 +399,10 @@ deleteTask = i => {
 ```
 - `name`, `icon`, and `version` are required
 - Under `slug`, you should paste the CDN url of the code you published. It should look like `https://expo.io/@username/project`. 
-
-MORE COMING SOON!
+- This should be all you need to publish an app on the Google Play Store. Make sure you have tested your app on your android device or the android simulator on [snack](https://snack.expo.io). 
+- Run `expo build:android`
+- Next, upload the executable files built from the previous step to the Google Play Console. This requires a [Google Play Developer account](https://play.google.com/apps/publish/signup/) and $25. Follow [this guide](https://docs.expo.io/versions/latest/distribution/uploading-apps/#21-if-you-choose-to-upload-your) for help uploading.
+- Enjoy your todo list as well as your new React Native skills and knowledge!
 
 ---
 
