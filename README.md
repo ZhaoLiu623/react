@@ -30,7 +30,7 @@ Make sure you familiarize with [the build/test tools](https://nathanielbd.github
 3. Let's start with importing our dependencies
 ```javascript
 import * as React from 'react';
-import { Text, View, FlatList, Button, TextInput, StyleSheet } from 'react-native';
+import { Text, View, FlatList, Button, TextInput, StyleSheet, AsyncStorage, ActivityIndicator } from 'react-native';
 ```
 - We need to import anything that isn't part of the JavaScript language
 - The `*` is pronounced 'wildcard' and means everything in a certain module.
@@ -292,8 +292,81 @@ And we're done! Test the app out. It should look like [this](https://snack.expo.
 ### Part 4: Persistent Lists using AsyncStorage
 
 - Todo lists aren't very useful if they go away after you exit the app.
+- Let's add some memory to the app that persists between sessions.
+- We'll use [AsyncStorage](https://reactnative.dev/docs/asyncstorage.html) for this. 
+- The 'Async' part of Async storage stands for asynchronous. That means there may be some time delay between when its methods are called and when it will return a response. JavaScript has its own way of dealing with asynchronicity, so we're going to have to learn some new syntax.
+- AsyncStorage is local to the device running the app and every component can see its contents.
+- It organizes its data with key-value pairs, where both of them are strings.
+- Let's make it so that the app pulls from AsyncStorage every time the user opens the app.
+```javascript
+constuctor(props) {
+	super(props);
+	this.state = {
+		...
+		loaded: false
+	};
+}
 
-MORE COMING SOON!
+...
+
+deleteTask = i => {
+	...
+} 
+
+async componentDidMount() {
+	await AsyncStorage.getItem("TASKS",
+		(err, item) => {
+			if (item !== null) {
+				this.setState({tasks: JSON.parse(item)});
+			}
+			this.setState({loaded: true});
+		}
+	);
+}
+
+render() {
+	if (!this.state.loaded) {
+		return <ActivityIndicator/>
+	} 
+	...
+}
+```
+- We need to prefix each asynchronous function with the keyword `async`. This allows us to use the keyword `await`, which waits until an asynchronous call can resolve to a value.
+- `componentDidMount` is another special method for components besides `render`. It is called after the constructor and is able to be asynchronous.
+- Since `componentDidMount` is asynchronous and `render` is not, we need to make sure that the incorrect data is not being rendered before the data is updated in `componentDidMount`. We do this by having a `loaded` key in our state that is `false` by default and is only made `true` when `componentDidMount` is finished. In the time that `componentDidMount` takes to finish, `render` will simply display a loading wheel.
+- Note that we reference the key `"TASKS"` before we ever assign a value to that key. When the user opens the app for the first time, the value associated with `"TASKS"` will be `null` or empty. We only update our data if `"TASKS"` has a non-null value.
+- `AsyncStorage.getItem` takes two arguments. The first is which key to look for its value. The second is a function to call when the lookup is complete. That function, called a callback, could handle errors, but we won't be doing that in this rather simple app.
+- This call to `JSON.parse` is a preview of what we will be doing next. `JSON.parse` takes a JSON string and converts it to an object. This bridges the gap between AsyncStorage, which wants a string key to store a string value, and `setState`, which takes an object.
+- Now let's actually allow `"TASKS"` to have a value that can be changed by the user.
+```javascript
+addTask = () => {
+	let isEmpty = this.state.text.trim().length == 0;
+
+	if (!isEmpty) {
+		this.setState(
+			(prevState) => {
+				...
+			},
+			async () => await AsyncStorage.setItem("TASKS", JSON.stringify(this.state.tasks))
+		);
+	}
+}
+
+deleteTask = i => {
+	this.setState(
+		(prevState) => {
+			...
+		},
+		async () => await AsyncStorage.setItem("TASKS", JSON.stringify(this.state.tasks))
+	);
+}
+```
+- Here, we're using an optional argument for `setState`: a function to call after setting the state. The funciton is another example of a callback.
+- Our callback is asynchronous and is what's updating AsyncStorage with the tasks being added and deleted. Since `state` is an object, we need to call `JSON.stringify` to turn it in a string so that AsyncStorage can store it.
+- `AsyncStorage.setItem` takes two arguments: the string key and the string value with to which associate it
+- Now, when the user adds or deletes a task, AsyncStorage will see this and update its data. Remembering back to what we did earlier with `componentDidMount`, the value associated with `"TASK"` will no longer be `null`. When the user closes the app and opens it again, `componentDidMount` will see that there is saved data under `"TASKS"` and change what will eventually be rendered for the user.
+- Try looking at the code we just wrote and see if you can find which line support the each step of reasoning in the above bullet point.
+- That's it! We now have a working todo list app that's actually usable!
 
 ### Part 5: Deployment to Google Play Store
 
@@ -325,8 +398,7 @@ MORE COMING SOON!
 }
 ```
 - `name`, `icon`, and `version` are required
-- Under `slug`, you should paste the CDN url of the code you published. It should look like `https://expo.io/@username/project`.
-- 
+- Under `slug`, you should paste the CDN url of the code you published. It should look like `https://expo.io/@username/project`. 
 
 MORE COMING SOON!
 
@@ -334,6 +406,6 @@ MORE COMING SOON!
 
 Adapted from [todo app with react native](https://codeburst.io/todo-app-with-react-native-f889e97e398e)
 
-Last updated: 03/26/2020
+Last updated: 04/09/2020
 
 Run `git pull` to update

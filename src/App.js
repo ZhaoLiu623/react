@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { Text, View, FlatList, Button, TextInput, StyleSheet } from 'react-native';
+import { Text, View, FlatList, Button, TextInput, StyleSheet, AsyncStorage, ActivityIndicator } from 'react-native';
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tasks: [{ text: "Start by adding a task!" }],
-      text: ""
+      text: "",
+      loaded: false
     };
   }
   
@@ -25,7 +26,8 @@ export default class App extends React.Component {
             tasks: tasks.concat({ index: tasks.length, text: text }),
             text: ""
           };
-        }
+        },
+        async () => await AsyncStorage.setItem("TASKS", JSON.stringify(this.state.tasks))
       );
     }
   }
@@ -36,11 +38,26 @@ export default class App extends React.Component {
         let newState = prevState.tasks.slice()
         newState.splice(i, 1);
         return { tasks: newState };
+      },
+      async () => await AsyncStorage.setItem("TASKS", JSON.stringify(this.state.tasks))
+    );
+  }
+
+  async componentDidMount() {
+    await AsyncStorage.getItem("TASKS",
+      (err, item) => {
+        if (item !== null) {
+          this.setState({tasks: JSON.parse(item)});
+        }
+        this.setState({loaded: true});
       }
     );
   }
 
   render() {
+    if (!this.state.loaded) {
+      return <ActivityIndicator/>
+    }
     return (
       <View>
         <Text style={styles.title}>Todo List</Text>
